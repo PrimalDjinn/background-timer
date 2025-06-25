@@ -96,10 +96,29 @@ async function init() {
   startWorker();
 }
 
+function stop() {
+  console.log('Stopping Ifkafin extension...');
+  assertChromeAPI();
+  unwatchCounter();
+  chrome.runtime.sendMessage('stop-counter', (response) => {
+    if (chrome.runtime.lastError) {
+      console.error('Error stopping counter:', chrome.runtime.lastError);
+    } else {
+      console.log('Counter stopped:', response);
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const demoButton = document.getElementById('demoButton');
   if (!demoButton) {
     console.error('Button with ID "demoButton" not found in the document.');
+    return;
+  }
+
+  const stopButton = document.getElementById('stopButton');
+  if (!stopButton) {
+    console.error('Button with ID "stopButton" not found in the document.');
     return;
   }
 
@@ -111,15 +130,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   demoButton.addEventListener('click', onStart);
 
+  stopButton.addEventListener('click', () => {
+    stop();
+    document.getElementById('result').textContent = 'Ifkafin extension stopped.';
+    console.log('Ifkafin extension stopped.');
+
+    demoButton.disabled = false;
+    stopButton.disabled = true;
+  });
+
   isRunning().then(async (running) => {
     if (running) {
       demoButton.disabled = true;
+      stopButton.disabled = false;
       document.getElementById('result').textContent = 'Ifkafin extension is running!';
       watchCounter();
     } else {
       demoButton.disabled = false;
+      stopButton.disabled = true;
       document.getElementById('result').textContent = 'Ifkafin extension is not running.';
     }
+
   }).catch((error) => {
     console.error('Error checking Ifkafin extension status:', error);
     document.getElementById('result').textContent = 'Error checking Ifkafin extension status. ' + error.message;
