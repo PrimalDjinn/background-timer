@@ -1,0 +1,19 @@
+{
+    "name": "Test Extensions",
+    "description": "Base Level Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": "assets/logo.png"
+    },
+    "background": {
+        "service_worker": "service-worker.js",
+        "type": "module"
+    },
+    "permissions": [
+        "storage",
+        "alarms",
+        "nativeMessaging"
+    ]
+}
